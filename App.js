@@ -23,9 +23,9 @@ export default class App extends React.Component {
 
     if (uid) {
       if (online) {
-        firebase.database().ref('/users/' + uid).update({ online: true })
+        firebase.database().ref('/neighborhood/' + uid).update({ online: true })
       } else {
-        firebase.database().ref('/users/' + uid).update({ online: false })
+        firebase.database().ref('/neighborhood/' + uid).update({ online: false })
       }
     }
 

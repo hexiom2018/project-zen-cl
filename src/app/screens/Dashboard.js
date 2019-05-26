@@ -224,14 +224,15 @@ class Dashboard extends React.Component {
   }
 
   getUsersState() {
-    var allUsers = []
-    firebase.database().ref('/users/').on('child_added', (snapShot) => {
-      allUsers.push({
-        ...snapShot.val(),
-        uid: snapShot.key
-      })
-      this.setState({ allUsers })
+
+    firebase.database().ref('/neighborhood/').on('child_changed', (snapShot) => {
+      let { neighbors } = this.state
+
+      neighbors[snapShot.key].online = snapShot.val().online
+
+      this.setState({ neighbors })
     })
+
   }
 
   async componentWillMount() {
@@ -1376,9 +1377,6 @@ class RenderHouse extends React.Component {
           {neighbors && Object.keys(neighbors).map((id, p) => {
             if (neighbors[id].houseID === h_no) {
 
-              console.log(neighbors[id], 'house id')
-              console.log(neighbors[id].houseID, 'neighbors[id].houseID')
-              console.log(h_no, 'h_no h_no')
               flag = true;
               neighborID = id;
             }
