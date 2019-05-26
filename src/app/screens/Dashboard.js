@@ -10,7 +10,8 @@ import {
   Image,
   TouchableHighlight,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  AppState
 } from "react-native";
 
 import {
@@ -119,7 +120,7 @@ const cHouses = [
   cHouse11,
   cHouse12,
   cHouse13,
-  cHouse14, 
+  cHouse14,
   cHouse15,
   cHouse16,
   cHouse17,
@@ -210,21 +211,51 @@ class Dashboard extends React.Component {
     residentEmail: "",
     users: false,
     neighbors: false,
-    neighborID: 1
+    neighborID: 1,
+    appState: AppState.currentState
   };
 
   componentDidMount() {
     const { navigate } = this.props.navigation;
     this.data();
     var a = this.props.navigation;
-      console.log("snapshot")
+    // console.log("snapshot")
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.LANDSCAPE_RIGHT);
   }
 
-  componentWillMount() {
+  getUsersState() {
+    var allUsers = []
+    firebase.database().ref('/users/').on('child_added', (snapShot) => {
+      allUsers.push({
+        ...snapShot.val(),
+        uid: snapShot.key
+      })
+      this.setState({ allUsers })
+    })
+  }
+
+  async componentWillMount() {
+
+    this.getUsersState()
+
     this._RefreshHouse();
 
   }
+
+  // componentWillUnmount() {
+  //   AppState.removeEventListener('change', this._handleAppStateChange);
+  // }
+
+  // _handleAppStateChange = (nextAppState) => {
+  //   console.log(nextAppState, 'app sattate')
+  //   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+  //     console.log('App has come to the foreground!')
+  //   } else {
+  //     console.log('App has gone to the background!')
+
+  //   }
+  //   this.setState({ appState: nextAppState });
+  // }
 
   _RefreshHouse = () => {
     this.getNeighbors();
@@ -232,11 +263,11 @@ class Dashboard extends React.Component {
   data = () => {
     var users = firebase
       .database()
-      .ref("/").on('value', function(dataSnapshot) { 
-        
-          console.log(dataSnapshot.val(),'check')
-        
-        })
+      .ref("/").on('value', function (dataSnapshot) {
+
+        // console.log(dataSnapshot.val(), 'check')
+
+      })
   };
 
   getUsers = () => {
@@ -245,6 +276,7 @@ class Dashboard extends React.Component {
       .ref("/users/")
       .once("value")
       .then(res => {
+        // console.log(res, 'response')
         this.setState({
           users: Object.values(res.val())
         });
@@ -654,13 +686,13 @@ class Dashboard extends React.Component {
   renderPrivacyPolicy = () => (
     <View style={styles.modalContent}>
       <Item>
-        <Label style={{fontSize: 18, marginBottom: 5}}>Privacy And Policy</Label>
+        <Label style={{ fontSize: 18, marginBottom: 5 }}>Privacy And Policy</Label>
       </Item>
       <View>
         <Text>Read our Privacy and Policy</Text>
       </View>
       {/* <TouchableOpacity onPress={()=>this.changeEmail(this.state.currentPasswordForEmail , this.state.currentPasswordForEmail)}> */}
-      <TouchableOpacity onPress={() => this.setState({privacyModal: null})}>
+      <TouchableOpacity onPress={() => this.setState({ privacyModal: null })}>
         <View style={styles.button}>
           <Text>Close</Text>
         </View>
@@ -696,7 +728,7 @@ class Dashboard extends React.Component {
   )
 
   callFun = async (b_no) => {
-    await this.setState({ 
+    await this.setState({
       visibleModal: b_no === -1 ? true : null, // -1 setting button
       privacyModal: b_no === 0 ? true : null,
       neighborID: b_no > 0 ? b_no : this.state.neighborID
@@ -734,7 +766,7 @@ class Dashboard extends React.Component {
             styles[`settingImgTouch_${b_no}`]
           ]}
         >
-          
+
           {b_no !== 0 && b_no - 1 === this.state.neighborID
             ? <Image source={cSettingBtns[this.state.neighborID - 1]} style={styles.settingImg} />
             : <Image source={btnImg} style={styles.settingImg} />
@@ -804,7 +836,7 @@ class Dashboard extends React.Component {
         >
           {this.renderPrivacyPolicy()}
         </Modal>
-        
+
       </Container>
     );
   }
@@ -1104,7 +1136,7 @@ class RenderHouse extends React.Component {
     neighborInfo: {}
   }
 
-  _onPress = (h_no, neighborID="") => {
+  _onPress = (h_no, neighborID = "") => {
     this._checkUser(neighborID)
     this.setState({
       visibleInviteResident: true,
@@ -1124,11 +1156,11 @@ class RenderHouse extends React.Component {
       .remove()
       .then(() => {
         this.props.RefreshHouse()
-      }); 
+      });
   }
 
   _checkUser = (id) => {
-    let userRef = firebase.database().ref("/users/"); 
+    let userRef = firebase.database().ref("/users/");
     userRef
       .orderByKey()
       .equalTo(id)
@@ -1137,7 +1169,7 @@ class RenderHouse extends React.Component {
           this.setState({
             neighborInfo: snap.val()[id]
           })
-        } 
+        }
       })
   }
 
@@ -1161,7 +1193,7 @@ class RenderHouse extends React.Component {
               neighborhoodID = objKey;
               let obj = {
                 houseID: this.state.house_no,
-                uid, 
+                uid,
                 neighborID
               }
 
@@ -1175,7 +1207,7 @@ class RenderHouse extends React.Component {
           })
         }
       })
-    
+
   }
 
   _onPressMove = () => {
@@ -1244,8 +1276,8 @@ class RenderHouse extends React.Component {
 
   renderMoveResident = () => {
     let houses = [];
-    for(var i=1;i<=20;i++) {
-      houses.push(<Picker.Item key={i} label={"House-" + i} value={"house_"+i} />)
+    for (var i = 1; i <= 20; i++) {
+      houses.push(<Picker.Item key={i} label={"House-" + i} value={"house_" + i} />)
     }
     return (
       <View>
@@ -1270,9 +1302,9 @@ class RenderHouse extends React.Component {
   }
 
   renderDeleteResident = () => (
-    <View style={{height: 50}}>
-      <View style={{flex: 1, flexDirection: 'row'}}>
-        <TouchableOpacity onPress={this._onPressDelete} style={{styles}}>
+    <View style={{ height: 50 }}>
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <TouchableOpacity onPress={this._onPressDelete} style={{ styles }}>
           <View style={styles.button}>
             <Text>Confirm ?</Text>
           </View>
@@ -1297,23 +1329,23 @@ class RenderHouse extends React.Component {
         <View style={styles.modalContent}>
           <Text>Neighbor ID: #{this.props.neighborID}</Text>
           <Text>House No.: #{this.state.house_no}</Text>
-          {this.state.neighborInfo.mail 
+          {this.state.neighborInfo.mail
             ? <Text>Email: {this.state.neighborInfo.mail}</Text>
             : <Text>Add New Resident to this home</Text>
           }
-          
+
           <Item
             style={{ height: 50, width: '100%' }}
           >
-          <Picker
-            selectedValue={this.state.action}
-            style={{ height: 50, width: '100%' }}
-            onValueChange={this._onChangeAction}>
-            <Picker.Item label="Invite Resident" value="invite" />
-            <Picker.Item label="Move Resident" value="move" />
-            <Picker.Item label="Delete Resident" value="delete" />
-            <Picker.Item label="Add New Resident" value="add" />
-          </Picker>
+            <Picker
+              selectedValue={this.state.action}
+              style={{ height: 50, width: '100%' }}
+              onValueChange={this._onChangeAction}>
+              <Picker.Item label="Invite Resident" value="invite" />
+              <Picker.Item label="Move Resident" value="move" />
+              <Picker.Item label="Delete Resident" value="delete" />
+              <Picker.Item label="Add New Resident" value="add" />
+            </Picker>
           </Item>
           {this.state.action === 'invite' && this.renderInviteResident()}
           {this.state.action === 'add' && this.renderAddNewResident()}
@@ -1326,7 +1358,7 @@ class RenderHouse extends React.Component {
 
   render() {
     const { house, h_no, neighbors, ...props } = this.props;
-    
+
     let flag = false;
     let neighborID = '';
     return (
@@ -1340,20 +1372,24 @@ class RenderHouse extends React.Component {
           ]}
           onPress={() => this._onPress(h_no, neighborID)}
         >
-      
+
           {neighbors && Object.keys(neighbors).map((id, p) => {
             if (neighbors[id].houseID === h_no) {
+
+              console.log(neighbors[id], 'house id')
+              console.log(neighbors[id].houseID, 'neighbors[id].houseID')
+              console.log(h_no, 'h_no h_no')
               flag = true;
               neighborID = id;
             }
             return <>
-              {neighbors[id].houseID === h_no && <Image source={cHouses[h_no - 1]} style={styles.house} />}
+              {neighbors[id].houseID === h_no && <Image source={neighbors[id].online ? cHouse7 : cHouses[h_no - 1]} style={styles.house} />}
               {neighbors[id].houseID === h_no && <Image source={Profile} style={styles.profile} />}
             </>
           })}
 
           {!flag && <Image source={house} style={styles.house} />}
-          
+
         </TouchableOpacity>
       </View>
     )

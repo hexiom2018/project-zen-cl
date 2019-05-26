@@ -53,6 +53,9 @@ export default class SignIn extends Component {
 
     let uid = await AsyncStorage.getItem("auth");
     let user = await AsyncStorage.getItem("username")
+
+    console.log(uid,'useruid')
+    console.log(user,'useruseruser')
     navigate("Splash", {
       userName: user,
       UID: uid
@@ -83,7 +86,7 @@ export default class SignIn extends Component {
             var user = fb.currentUser;
             emailVerified = user.emailVerified;
 
-            if (emailVerified === true) {
+            if (emailVerified === true) { 
               var checkForUser = snapshot.val();
               var checking = checkForUser.userName;
               var UID = signedinUser.user.uid;
