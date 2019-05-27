@@ -212,7 +212,8 @@ class Dashboard extends React.Component {
     users: false,
     neighbors: false,
     neighborID: 1,
-    appState: AppState.currentState
+    appState: AppState.currentState,
+    chatModal: false
   };
 
   componentDidMount() {
@@ -643,6 +644,62 @@ class Dashboard extends React.Component {
     </Container>
   );
 
+  //chat modal
+  renderChatMessages = () => {
+    return (
+
+      <View style={styles.mainDivPost}>
+
+        <View style={styles.innerMainDiv}>
+          <View style={styles.postDiv}>
+          </View>
+          <View style={styles.postButtonsRow}>
+            <TouchableOpacity
+              style={styles.postButton1}
+              onPress={() => console.log('invite')}>
+              <Text style={styles.planeText}>Invite</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton2}
+              onPress={() => console.log('Move')}>
+              <Text style={styles.planeText}>Move</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton3}
+              onPress={() => console.log('Cancle')}>
+              <Text style={styles.headingText}>Cancle</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.postButtonsRow}>
+            <TouchableOpacity
+              style={styles.postButton4}
+              onPress={() => console.log('Delete')}>
+              <Text style={styles.planeText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton5}
+              onPress={() => console.log('addedd')}>
+              <Text style={styles.planeText}>Add</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton6}
+              onPress={() => console.log('Next')}>
+              <Text style={styles.headingText}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+      </View>
+    )
+  }
+
+  open = () => {
+    this.setState({ chatModal: true })
+    console.log("check")
+
+  }
+
+
   renderModalContentForEmail = () => (
     <View style={styles.modalContent}>
       <Item>
@@ -743,6 +800,8 @@ class Dashboard extends React.Component {
     </View>
   )
 
+
+
   renderModalContentForInviteResident = () => (
     <View style={styles.modalContent}>
       <Label>House No: #{this.state.house_no}</Label>
@@ -790,6 +849,7 @@ class Dashboard extends React.Component {
           neighbors={this.state.neighbors}
           RefreshHouse={this._RefreshHouse}
           neighborID={this.state.neighborID}
+          open={this.open}
         />
       );
     });
@@ -817,6 +877,10 @@ class Dashboard extends React.Component {
         </TouchableOpacity>
       );
     });
+
+  openmodal = () => {
+    console.log("check")
+  }
 
   render() {
     return (
@@ -879,7 +943,17 @@ class Dashboard extends React.Component {
         >
           {this.renderPrivacyPolicy()}
         </Modal>
+        <Modal
+          isVisible={this.state.chatModal === true}
+          backdropOpacity={0}
+          onBackdropPress={() =>
+            this.setState({ chatModal: null })
+          }
+        >
+          {/* {this.renderPrivacyPolicy()} */}
 
+          {this.renderChatMessages()}
+        </Modal>
       </Container>
     );
   }
@@ -1164,6 +1238,94 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     zIndex: 999
+  },
+  mainDivPost: {
+    flex: 1,
+    alignItems: 'center',
+    // backgroundColor: 'red',
+    // borderWidth: 2,
+    justifyContent: 'center'
+  },
+  innerMainDiv: {
+    backgroundColor: 'grey',
+    // borderWidth: 2,
+    width: '60%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    flex: 1
+  },
+  postDiv: {
+    height: '60%',
+    flex: 1,
+    borderColor: 'black',
+    borderWidth: 1,
+    margin: 2
+  },
+  postButtonsRow: {
+    flexDirection: 'row',
+    height: '20%',
+    // borderWidth: 2,
+    margin: 2,
+    justifyContent: 'space-evenly'
+
+  },
+  postButton1: {
+    backgroundColor: 'blue',
+    width: '25%',
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: 'center',
+    alignItems: 'center',
+
+  },
+  postButton2: {
+    backgroundColor: 'yellow',
+    width: '25%',
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  postButton3: {
+    backgroundColor: 'orange',
+    width: '50%',
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  postButton4: {
+    backgroundColor: 'green',
+    width: '25%',
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  postButton5: {
+    backgroundColor: 'orange',
+    width: '25%',
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  postButton6: {
+    backgroundColor: 'red',
+    width: '50%',
+    borderWidth: 1,
+    borderColor: "grey",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  planeText: {
+    fontSize: 15,
+    
+  },
+  headingText: {
+    fontSize: 20,
+    fontWeight:'bold'
+
   }
 });
 
@@ -1399,6 +1561,10 @@ class RenderHouse extends React.Component {
       </Modal>
     )
   }
+  modal1 = () => {
+    this.props.open()
+    console.log('hello')
+  }
 
   render() {
     const { house, h_no, neighbors, ...props } = this.props;
@@ -1415,6 +1581,8 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
           onPress={() => this._onPress(h_no, neighborID)}
+          // onPress={this.modal1}
+
         >
 
           {neighbors && Object.keys(neighbors).map((id, p) => {
