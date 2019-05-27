@@ -228,7 +228,7 @@ class Dashboard extends React.Component {
     firebase.database().ref('/neighborhood/').on('child_changed', (snapShot) => {
       let { neighbors } = this.state
 
-      neighbors[snapShot.key].online = snapShot.val().online
+      neighbors[snapShot.key] = snapShot.val()
 
       this.setState({ neighbors })
     })
@@ -372,41 +372,85 @@ class Dashboard extends React.Component {
     alert("Header Text Updated ");
   };
 
+  storeImage(uid, downloadedUrl) {
+
+    firebase.database().ref('/neighborhood/' + uid + '/').update({
+      profile: downloadedUrl
+    }).then(() => {
+      alert("Success! Your Profile Image is Updated");
+    })
+
+  }
+
   _pickImage = async () => {
-    console.log("image");
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3]
-    });
 
-    console.log(result);
+    let uid = await AsyncStorage.getItem("auth");
 
-    if (!result.cancelled) {
-      this.setState({ image: result.uri });
-      var a = this.uploadImage()
-        .then(() => {
-          alert("Success! Your Profile Image is Updated");
-          console.log(a);
-        })
-        .catch(error => {
-          alert(error);
-        });
+    if (uid) {
+
+      let result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      });
+
+      console.log(result);
+
+      if (!result.cancelled) {
+        this.setState({ image: result.uri });
+        var a = this.uploadImageAsync(result.uri)
+          .then((res) => {
+            console.log(res, 'response downloaded url');
+            this.storeImage(uid, res)
+          })
+          .catch(error => {
+            alert(error);
+          });
+      }
+
+    } else {
+      alert('Please login first')
     }
   };
 
-  uploadImage = async () => {
-    var uri = this.state.image;
-    console.log(uri);
-    var imageName = "profile";
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    var projectNameText = this.state.projectNameText;
-    var ref = firebase
+  // uploadImage = async () => {
+  //   var uri = this.state.image;
+  //   console.log(uri);
+  //   var imageName = "profile";
+  //   const response = await fetch(uri);
+  //   const blob = await response.blob();
+  //   var projectNameText = this.state.projectNameText;
+  //   var ref = firebase
+  //     .storage()
+  //     .ref()
+  //     .child(UID + "/" + imageName);
+  //   return ref.put(blob);
+  // };
+
+
+  async  uploadImageAsync(uri) {
+    let uid = await AsyncStorage.getItem("auth");
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+    const ref = firebase
       .storage()
       .ref()
-      .child(UID + "/" + imageName);
-    return ref.put(blob);
-  };
+      .child(uid + '/profile');
+    const snapshot = await ref.put(blob);
+    // We're done with the blob, close and release it
+    blob.close();
+    return await snapshot.ref.getDownloadURL();
+  }
 
   changeEmail = () => {
     var currentPassword = this.state.currentPasswordForEmail;
@@ -517,9 +561,7 @@ class Dashboard extends React.Component {
             >
               <CardItem
                 button
-                onPress={() => {
-                  this._pickImage();
-                }}
+                onPress={this._pickImage}
                 style={{ backgroundColor: "#a1b223" }}
               >
                 <Text style={{ backgroundColor: "#a1b223" }}>Change Image</Text>
@@ -1117,6 +1159,7 @@ const styles = StyleSheet.create({
   profile: {
     width: 25,
     height: 25,
+    borderRadius: 50,
     position: "absolute",
     top: 0,
     left: 0,
@@ -1382,7 +1425,7 @@ class RenderHouse extends React.Component {
             }
             return <>
               {neighbors[id].houseID === h_no && <Image source={neighbors[id].online ? cHouse7 : cHouses[h_no - 1]} style={styles.house} />}
-              {neighbors[id].houseID === h_no && <Image source={Profile} style={styles.profile} />}
+              {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
             </>
           })}
 
