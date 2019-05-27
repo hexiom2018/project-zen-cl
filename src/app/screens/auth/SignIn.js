@@ -86,7 +86,7 @@ export default class SignIn extends Component {
             var user = fb.currentUser;
             emailVerified = user.emailVerified;
 
-            if (emailVerified === true) { 
+            if (emailVerified === false) { 
               var checkForUser = snapshot.val();
               var checking = checkForUser.userName;
               var UID = signedinUser.user.uid;
