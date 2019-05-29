@@ -1366,7 +1366,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: "absolute",
     top: 0,
-    left: -5,
+    left: 22,
     zIndex: 9999
   },
   mainDivPost: {
