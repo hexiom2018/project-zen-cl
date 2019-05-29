@@ -1366,8 +1366,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: "absolute",
     top: 0,
-    left: 0,
-    zIndex: 999
+    left: -5,
+    zIndex: 9999
   },
   mainDivPost: {
     flex: 1,
@@ -1777,9 +1777,9 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
 
-          onPress={() => this._onPress(h_no, neighborID)}
+          // onPress={() => this._onPress(h_no, neighborID)}
           // onPress={this.props.openpostModal}
-          // onPress={this.props.openchatModal}
+          onPress={this.props.openchatModal}
 
           
 
