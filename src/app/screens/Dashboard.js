@@ -104,6 +104,7 @@ import cHouse18 from "../../../assets/images/house_c_18.png";
 import cHouse19 from "../../../assets/images/house_c_19.png";
 import cHouse20 from "../../../assets/images/house_c_20.png";
 
+
 import { Dropdown } from 'react-native-material-dropdown'
 
 const cHouses = [
@@ -644,14 +645,18 @@ class Dashboard extends React.Component {
     </Container>
   );
 
-  //chat modal
-  renderChatMessages = () => {
+  // post modal  modal
+  renderPostModal = () => {
     return (
 
       <View style={styles.mainDivPost}>
 
         <View style={styles.innerMainDiv}>
           <View style={styles.postDiv}>
+            <Image
+              style={{ width: "100%", height: '100%' }}
+            // source={cHouse20}
+            />
           </View>
           <View style={styles.postButtonsRow}>
             <TouchableOpacity
@@ -692,11 +697,106 @@ class Dashboard extends React.Component {
       </View>
     )
   }
-
-  open = () => {
+  //post modal function
+  openchatModal = () => {
     this.setState({ chatModal: true })
     console.log("check")
 
+  }
+  openpostModal = () => {
+    this.setState({ postModal: true })
+    console.log("check")
+
+  }
+  // chat messages modal
+
+  renderChatMessages = () => {
+    return (
+
+      <View style={styles.mainDivPost}>
+
+        <View style={styles.innerMainDiv}>
+          <View style={styles.MessagesDiv}>
+            <View style={styles.message}>
+              <View style={styles.imgDiv}>
+                <View style={styles.imageDiv}>
+                  <Image
+                    style={{ width: '90%', height: '90%', }}
+                    source={cHouse20}
+                  />
+                </View>
+              </View>
+              <View style={styles.textDiv}>
+                <Text style={{ color: 'black', }}>Invite</Text>
+              </View>
+            </View>
+            
+            <View style={styles.message}>
+              <View style={styles.imgDiv}>
+                <View style={styles.imageDiv}>
+                  <Image
+                    style={{ width: '90%', height: '90%', }}
+                    source={cHouse20}
+                  />
+                </View>
+              </View>
+              <View style={styles.textDiv2}>
+                <Text style={{ color: 'black', }}>Invite</Text>
+              </View>
+            </View>
+            <View style={styles.message}>
+              <View style={styles.imgDiv}>
+                <View style={styles.imageDiv}>
+                  <Image
+                    style={{ width: '50%', height: '50%', }}
+                    source={cHouse20}
+                  />
+                </View>
+              </View>
+              <View style={styles.textDiv3}>
+                <Text style={{ color: 'black', }}>Invite</Text>
+              </View>
+            </View>
+
+          </View>
+          <View style={styles.postButtonsRow}>
+            <TouchableOpacity
+              style={styles.postButton1}
+              onPress={() => console.log('invite')}>
+              <Text style={styles.planeText}>Invite</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton2}
+              onPress={() => console.log('Move')}>
+              <Text style={styles.planeText}>Move</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton3}
+              onPress={() => console.log('Cancle')}>
+              <Text style={styles.headingText}>Cancle</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.postButtonsRow}>
+            <TouchableOpacity
+              style={styles.postButton4}
+              onPress={() => console.log('Delete')}>
+              <Text style={styles.planeText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton5}
+              onPress={() => console.log('addedd')}>
+              <Text style={styles.planeText}>Add</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.postButton6}
+              onPress={() => console.log('Next')}>
+              <Text style={styles.headingText}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+      </View>
+    )
   }
 
 
@@ -878,9 +978,7 @@ class Dashboard extends React.Component {
       );
     });
 
-  openmodal = () => {
-    console.log("check")
-  }
+
 
   render() {
     return (
@@ -953,6 +1051,17 @@ class Dashboard extends React.Component {
           {/* {this.renderPrivacyPolicy()} */}
 
           {this.renderChatMessages()}
+        </Modal>
+        <Modal
+          isVisible={this.state.postModal === true}
+          backdropOpacity={0}
+          onBackdropPress={() =>
+            this.setState({ postModal: null })
+          }
+        >
+          {/* {this.renderPrivacyPolicy()} */}
+
+          {this.renderPostModal()}
         </Modal>
       </Container>
     );
@@ -1247,7 +1356,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   innerMainDiv: {
-    backgroundColor: 'grey',
+    backgroundColor: '#837C8F',
     // borderWidth: 2,
     width: '60%',
     flexDirection: 'column',
@@ -1270,63 +1379,129 @@ const styles = StyleSheet.create({
 
   },
   postButton1: {
-    backgroundColor: 'blue',
+    backgroundColor: '#28B7D7',
     width: '25%',
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: "#837C8F",
     justifyContent: 'center',
     alignItems: 'center',
 
   },
   postButton2: {
-    backgroundColor: 'yellow',
+    backgroundColor: '#6CB9FE',
     width: '25%',
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: "#837C8F",
     justifyContent: 'center',
     alignItems: 'center',
   },
   postButton3: {
-    backgroundColor: 'orange',
+    backgroundColor: '#FFB73E',
     width: '50%',
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: "#837C8F",
     justifyContent: 'center',
     alignItems: 'center',
   },
   postButton4: {
-    backgroundColor: 'green',
+    backgroundColor: '#A2AD2A',
     width: '25%',
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: "#837C8F",
     justifyContent: 'center',
     alignItems: 'center',
   },
   postButton5: {
-    backgroundColor: 'orange',
+    backgroundColor: '#F9622C',
     width: '25%',
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: "#837C8F",
     justifyContent: 'center',
     alignItems: 'center',
   },
   postButton6: {
-    backgroundColor: 'red',
+    backgroundColor: '#C42122',
     width: '50%',
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: "#837C8F",
     justifyContent: 'center',
     alignItems: 'center',
   },
   planeText: {
     fontSize: 15,
-    
+
   },
   headingText: {
     fontSize: 20,
-    fontWeight:'bold'
+    fontWeight: 'bold'
 
+  },
+  MessagesDiv: {
+    height: '60%',
+    flex: 1,
+    // borderWidth: 1,
+    margin: 2,
+    backgroundColor: 'black',
+    flexDirection: 'column',
+    // borderColor: 'white'
+    justifyContent:'space-between'
+  },
+  message: {
+    flexDirection: 'row',
+    // justifyContent: 'space-around',
+    height: '30%',
+    // flex: 1,
+    // borderColor: 'white',
+    // borderWidth: 1,
+    margin:2
+  },
+  imgDiv: {
+    width: '30%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  imageDiv: {
+    // flex: 1,
+    // width: '30%',
+    width: "50%",
+    height: "50%",
+    borderRadius: 50,
+    // position: "absolute",
+    // top: 0,
+    // left: 0,
+    // zIndex: 999
+  },
+
+  textDiv: {
+    // flex: 1,
+    width: '70%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // borderColor: 'white',
+    // borderWidth: 1,
+    backgroundColor: '#6CB9FE'
+  },
+  textDiv2: {
+    // flex: 1,
+    width: '70%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // borderColor: 'white',
+    // borderWidth: 1,
+    backgroundColor: '#F9622C'
+  },
+  textDiv3: {
+    // flex: 1,
+    width: '70%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // borderColor: 'white',
+    // borderWidth: 1,
+    backgroundColor: '#A2AD2A'
   }
+
+
+
 });
 
 export default Dashboard;
@@ -1581,8 +1756,6 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
           onPress={() => this._onPress(h_no, neighborID)}
-          // onPress={this.modal1}
-
         >
 
           {neighbors && Object.keys(neighbors).map((id, p) => {
