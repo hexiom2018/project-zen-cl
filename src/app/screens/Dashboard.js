@@ -236,7 +236,17 @@ class Dashboard extends React.Component {
 
   }
 
+  updateState(uid) {
+    if (uid) {
+      firebase.database().ref('/neighborhood/' + uid).update({ online: true })
+    }
+  }
+
   async componentWillMount() {
+
+    let uid = await AsyncStorage.getItem("auth");
+
+    this.updateState(uid)
 
     this.getUsersState()
 
@@ -650,7 +660,7 @@ class Dashboard extends React.Component {
 
       <View style={styles.mainDivPost}>
 
-        <View style={styles.innerMainDiv}>
+        <View style={[styles.innerMainDiv, { paddingHorizontal: 7, paddingVertical: 7 }]}>
           <View style={styles.postDiv}>
           </View>
           <View style={styles.postButtonsRow}>
@@ -1239,6 +1249,16 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 999
   },
+  status: {
+    width: 10,
+    height: 10,
+    // borderWidth: 1,
+    borderRadius: 50,
+    position: "absolute",
+    top: 0,
+    right: 20,
+    zIndex: 999
+  },
   mainDivPost: {
     flex: 1,
     alignItems: 'center',
@@ -1320,11 +1340,11 @@ const styles = StyleSheet.create({
   },
   planeText: {
     fontSize: 15,
-    
+
   },
   headingText: {
     fontSize: 20,
-    fontWeight:'bold'
+    fontWeight: 'bold'
 
   }
 });
@@ -1580,8 +1600,8 @@ class RenderHouse extends React.Component {
             styles.houseTouchable,
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
-          onPress={() => this._onPress(h_no, neighborID)}
-          // onPress={this.modal1}
+          // onPress={() => this._onPress(h_no, neighborID)}
+          onPress={this.modal1}
 
         >
 
@@ -1592,8 +1612,9 @@ class RenderHouse extends React.Component {
               neighborID = id;
             }
             return <>
-              {neighbors[id].houseID === h_no && <Image source={neighbors[id].online ? cHouse7 : cHouses[h_no - 1]} style={styles.house} />}
+              {neighbors[id].houseID === h_no && <Image source={cHouses[h_no - 1]} style={styles.house} />}
               {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
+              {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#4ced69' } : { backgroundColor: 'red' }]} />}
             </>
           })}
 
