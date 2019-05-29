@@ -1365,7 +1365,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: "absolute",
     top: 0,
-    right: 20,
+    left: 0,
     zIndex: 999
   },
   mainDivPost: {
@@ -1791,7 +1791,7 @@ class RenderHouse extends React.Component {
             return <>
               {neighbors[id].houseID === h_no && <Image source={cHouses[h_no - 1]} style={styles.house} />}
               {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
-              {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#4ced69' } : { backgroundColor: 'red' }]} />}
+              {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#27B371' } : { backgroundColor: 'red' }]} />}
             </>
           })}
 
