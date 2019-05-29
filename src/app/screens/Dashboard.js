@@ -715,7 +715,7 @@ class Dashboard extends React.Component {
   }
   openpostModal = () => {
     this.setState({ postModal: true })
-    console.log("check")
+    console.log("hello openpostModal ")
 
   }
   // chat messages modal
@@ -959,7 +959,8 @@ class Dashboard extends React.Component {
           neighbors={this.state.neighbors}
           RefreshHouse={this._RefreshHouse}
           neighborID={this.state.neighborID}
-          open={this.open}
+          openpostModal={this.openpostModal}
+          openchatModal={this.openchatModal}
         />
       );
     });
@@ -1776,8 +1777,10 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
 
-          // onPress={() => this._onPress(h_no, neighborID)}
-          onPress={this.modal1}
+          onPress={() => this._onPress(h_no, neighborID)}
+          // onPress={this.props.openpostModal}
+          // onPress={this.props.openchatModal}
+
           
 
         >
