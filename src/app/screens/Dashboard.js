@@ -105,7 +105,22 @@ import cHouse19 from "../../../assets/images/house_c_19.png";
 import cHouse20 from "../../../assets/images/house_c_20.png";
 
 
+import image1 from '../../../assets/dashboard/image1.png'
+import image2 from '../../../assets/dashboard/image2.png'
+import image3 from '../../../assets/dashboard/image3.png'
+
+import chatBox from '../../../assets/dashboard/chat.png'
+import postImg from '../../../assets/dashboard/post.png'
+
+import ImRight from '../../../assets/dashboard/houseIMRight.png'
+import ImLeft from '../../../assets/dashboard/houseIM.png'
+import postSmall from '../../../assets/dashboard/postSmall.png'
+
+import HouseBlueRight from '../../../assets/dashboard/house_c_4.png'
+import HouseBlueLeft from '../../../assets/dashboard/house_c_7.png'
+
 import { Dropdown } from 'react-native-material-dropdown'
+import { RotationGestureHandler } from "react-native-gesture-handler";
 
 const cHouses = [
   cHouse1,
@@ -663,10 +678,9 @@ class Dashboard extends React.Component {
 
         <View style={[styles.innerMainDiv, { paddingHorizontal: 7, paddingVertical: 7 }]}>
           <View style={styles.postDiv}>
-            <Image
-              style={{ width: "100%", height: '100%' }}
-            // source={cHouse20}
-            />
+            {
+              this.renderPosts(true)
+            }
           </View>
           <View style={styles.postButtonsRow}>
             <TouchableOpacity
@@ -714,60 +728,47 @@ class Dashboard extends React.Component {
 
   }
   openpostModal = () => {
-    this.setState({ postModal: true })
+    this.setState({ myPostModal: true })
     console.log("hello openpostModal ")
 
+  }
+
+  renderChats(color, image) {
+    return (
+      <View style={{ width: '100%', flexDirection: 'row', borderColor: 'yellow' }}>
+        <View style={{ width: '30%', borderColor: 'red', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 5, paddingVertical: 5, marginTop: 5 }}>
+          <View style={{ width: 30, height: 30 }}>
+            <Image source={image} style={{ width: '100%', height: '100%' }} />
+          </View>
+        </View>
+        <View style={{ width: '70%', paddingHorizontal: 7, paddingVertical: 5, alignItems: 'center' }}>
+          <View style={{ width: '90%', borderColor: color, backgroundColor: color, paddingHorizontal: 5, paddingVertical: 10 }}>
+            <Text style={{ color: 'black' }}>
+              {'Lorem epsum dolor'}
+            </Text>
+          </View>
+        </View>
+      </View>
+    )
   }
   // chat messages modal
 
   renderChatMessages = () => {
     return (
 
-      <View style={styles.mainDivPost}>
+      <View style={[styles.mainDivPost]}>
 
         <View style={styles.innerMainDiv}>
-          <View style={styles.MessagesDiv}>
-            <View style={styles.message}>
-              <View style={styles.imgDiv}>
-                <View style={styles.imageDiv}>
-                  <Image
-                    style={{ width: '90%', height: '90%', }}
-                    source={cHouse20}
-                  />
-                </View>
-              </View>
-              <View style={styles.textDiv}>
-                <Text style={{ color: 'black', }}>Invite</Text>
-              </View>
-            </View>
-            
-            <View style={styles.message}>
-              <View style={styles.imgDiv}>
-                <View style={styles.imageDiv}>
-                  <Image
-                    style={{ width: '90%', height: '90%', }}
-                    source={cHouse20}
-                  />
-                </View>
-              </View>
-              <View style={styles.textDiv2}>
-                <Text style={{ color: 'black', }}>Invite</Text>
-              </View>
-            </View>
-            <View style={styles.message}>
-              <View style={styles.imgDiv}>
-                <View style={styles.imageDiv}>
-                  <Image
-                    style={{ width: '50%', height: '50%', }}
-                    source={cHouse20}
-                  />
-                </View>
-              </View>
-              <View style={styles.textDiv3}>
-                <Text style={{ color: 'black', }}>Invite</Text>
-              </View>
-            </View>
-
+          <View style={{ flex: 1 }}>
+            {
+              this.renderChats('#6CB9FE', image1)
+            }
+            {
+              this.renderChats('#F9622C', image2)
+            }
+            {
+              this.renderChats('#A2AD2A', image3)
+            }
           </View>
           <View style={styles.postButtonsRow}>
             <TouchableOpacity
@@ -989,9 +990,68 @@ class Dashboard extends React.Component {
       );
     });
 
+  postMessage(text, color, value) {
+    return (
+      <View style={{ width: '100%', flexDirection: 'row', marginVertical: !value ? 2 : 4 }}>
+        <View style={{ width: '30%', alignItems: 'center', borderColor: 'red' }}>
+          <Image
+            style={{ width: 20, height: 20 }}
+            source={image1}
+          />
+        </View>
+        <View style={{ width: !value ? '70%' : 110, alignItems: 'center', borderColor: 'blue' }}>
+          <View style={{ paddingHorizontal: 4, paddingVertical: 3, backgroundColor: color }}>
+            <Text style={{ fontSize: 10 }}>
+              {text}
+            </Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
+  renderPosts(value) {
+    return (
+      <TouchableOpacity
+        // key={b_no}
+        activeOpacity={0.9}
+        onPress={() => this.setState({ myPostModal: false })}
+        style={[{ height: '100%', width: '100%', justifyContent: 'center' }, !value ? { alignItems: 'center', position: 'absolute', top: 0, zIndex: 10000 } : null]}
+      >
+        <View style={{ height: '100%', justifyContent: 'center' }}>
+          <TouchableOpacity
+            onPress={() => this.setState({ postModal: true })}
+            activeOpacity={0.5}
+            style={{ flexDirection: 'row', borderWidth: 3, borderColor: 'grey' }}>
+            <View style={{ width: 150, height: 150 }}>
+              <Image
+                style={{ width: '100%', height: '100%' }}
+                source={postImg}
+              />
+            </View>
+            <View style={{ width: !value ? 130 : 170, backgroundColor: 'black', alignItems: 'flex-start' }}>
+              {
+                this.postMessage('Lorem epsum dolor sit', 'green', value)
+              }
+              {
+                this.postMessage('Lorem epsum dolor sit epsum dolor sit', '#6CB9FE', value)
+              }
+              {
+                this.postMessage('Lorem epsum dolor', '#F9622C', value)
+              }
+              {
+                this.postMessage('Lorem epsum sit e', '#A2AD2A', value)
+              }
+            </View>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity >
+    )
+  }
 
 
   render() {
+    const { myPostModal } = this.state
     return (
       <Container style={{ flex: 1 }}>
         <StatusBar hidden={true} />
@@ -1001,6 +1061,8 @@ class Dashboard extends React.Component {
         {this.renderSettingBtn()}
 
         {this.renderHouses()}
+
+        {myPostModal && this.renderPosts()}
 
         <Modal
           isVisible={this.state.visibleModal === true}
@@ -1055,6 +1117,7 @@ class Dashboard extends React.Component {
         <Modal
           isVisible={this.state.chatModal === true}
           backdropOpacity={0}
+          // style={{ height: 600 }}
           onBackdropPress={() =>
             this.setState({ chatModal: null })
           }
@@ -1359,6 +1422,13 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 999
   },
+  chat: {
+    width: 50,
+    height: 50,
+    // borderRadius: 50,
+    position: "absolute",
+    zIndex: 9999
+  },
   status: {
     width: 10,
     height: 10,
@@ -1465,7 +1535,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     flexDirection: 'column',
     // borderColor: 'white'
-    justifyContent:'space-between'
+    justifyContent: 'space-between'
   },
   message: {
     flexDirection: 'row',
@@ -1474,7 +1544,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     // borderColor: 'white',
     // borderWidth: 1,
-    margin:2
+    margin: 2
   },
   imgDiv: {
     width: '30%',
@@ -1762,13 +1832,213 @@ class RenderHouse extends React.Component {
     console.log('hello')
   }
 
+
+  setIm(h_no) {
+    var obj
+    switch (h_no) {
+      case 1:
+        obj = 'ImLeft'
+        break;
+      case 2:
+        obj = 'ImLeft'
+        break;
+      case 3:
+        obj = 'ImLeft'
+        break;
+      case 4:
+        obj = 'right'
+        break;
+      case 5:
+        obj = 'ImLeft'
+        break;
+      case 6:
+        obj = 'right'
+        break;
+      case 7:
+        obj = 'right'
+        break;
+      case 8:
+        obj = 'ImLeft'
+        break;
+      case 9:
+        obj = 'right'
+        break;
+      case 10:
+        obj = 'right'
+        break;
+      case 11:
+        obj = 'ImLeft'
+        break;
+      case 12:
+        obj = 'right'
+        break;
+      case 13:
+        obj = 'right'
+        break;
+      case 14:
+        obj = 'ImLeft'
+        break;
+      case 15:
+        obj = 'ImLeft'
+        break;
+      case 16:
+        obj = 'ImLeft'
+        break;
+      case 17:
+        obj = 'ImLeft'
+        break;
+      case 18:
+        obj = 'right'
+        break;
+      case 19:
+        obj = 'right'
+        break;
+      case 20:
+        obj = 'right'
+        break;
+      default:
+        break;
+    }
+    return obj
+  }
+
+
+  chatDiv(h_no) {
+    var obj
+    switch (h_no) {
+      case 1:
+        obj = {
+          bottom: 0,
+          left: percentageY(12)
+        }
+        break;
+      case 2:
+        obj = {
+          bottom: 65,
+          left: percentageY(7)
+        }
+        break;
+      case 3:
+        obj = {
+          bottom: 0,
+          left: percentageY(12)
+        }
+        break;
+      case 4:
+        obj = {
+          top: -50,
+          left: percentageY(1)
+        }
+        break;
+      case 5:
+        obj = {
+          top: 1,
+          left: percentageY(12)
+        }
+        break;
+      case 6:
+        obj = {
+          bottom: 10,
+          left: percentageY(-8)
+        }
+        break;
+      case 7:
+        obj = {
+          bottom: 11,
+          left: percentageY(11)
+        }
+        break;
+      case 8:
+        obj = {
+          bottom: 25,
+          left: percentageY(6)
+        }
+        break;
+      case 9:
+        obj = {
+          bottom: '60%',
+          left: percentageY(11)
+        }
+        break;
+      case 10:
+        obj = {
+          bottom: '85%',
+          left: percentageY(8)
+        }
+        break;
+      case 11:
+        obj = {
+          bottom: '70%',
+          left: percentageY(6)
+        }
+        break;
+      case 12:
+        obj = {
+          bottom: '80%',
+          left: percentageY(5)
+        }
+        break;
+      case 13:
+        obj = {
+          bottom: '80%',
+          left: percentageY(6)
+        }
+        break;
+      case 14:
+        obj = {
+          bottom: '80%',
+          left: percentageY(6)
+        }
+        break;
+      case 15:
+        obj = {
+          bottom: '80%',
+          left: percentageY(6)
+        }
+        break;
+      case 16:
+        obj = {
+          bottom: '80%',
+          left: percentageY(6)
+        }
+        break;
+      case 17:
+        obj = {
+          bottom: '80%',
+          left: percentageY(6)
+        }
+        break;
+      case 18:
+        obj = {
+          bottom: '80%',
+          left: percentageY(6)
+        }
+        break;
+      case 19:
+        obj = {
+          bottom: '25%',
+          left: percentageY(6)
+        }
+        break;
+      case 20:
+        obj = {
+          bottom: '70%',
+          left: percentageY(4)
+        }
+        break;
+      default:
+        break;
+    }
+    return obj
+  }
+
   render() {
     const { house, h_no, neighbors, ...props } = this.props;
 
     let flag = false;
     let neighborID = '';
     return (
-      <View style={styles.houseContainer}>
+      <View style={[styles.houseContainer, { position: 'relative' }]}>
         {this.renderActionModal()}
         <TouchableOpacity
           activeOpacity={0.5}
@@ -1777,11 +2047,11 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
 
-          // onPress={() => this._onPress(h_no, neighborID)}
-          // onPress={this.props.openpostModal}
-          onPress={this.props.openchatModal}
+          onPress={() => this._onPress(h_no, neighborID)}
+        // onPress={this.props.openpostModal}
+        // onPress={this.props.openchatModal}
 
-          
+
 
         >
 
@@ -1792,9 +2062,19 @@ class RenderHouse extends React.Component {
               neighborID = id;
             }
             return <>
-              {neighbors[id].houseID === h_no && <Image source={cHouses[h_no - 1]} style={styles.house} />}
+              {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? this.setIm(h_no) === 'ImLeft' ? HouseBlueLeft : HouseBlueRight : neighbors[id].post ? this.setIm(h_no) === 'ImLeft' ? ImLeft : ImRight : cHouses[h_no - 1]} style={[styles.house]} />}
+              {neighbors[id].houseID === h_no &&
+                neighbors[id].profile &&
+                <TouchableOpacity onPress={this.props.openchatModal} style={[styles.chat, { top: 0, position: 'absolute' }]}>
+                  <Image source={neighbors[id].profile ? chatBox : null} style={[styles.chat, neighbors[id].profile ? this.chatDiv(h_no) : null]} />
+                </TouchableOpacity>}
               {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
               {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#27B371' } : { backgroundColor: 'red' }]} />}
+              {neighbors[id].houseID === h_no &&
+                neighbors[id].post &&
+                <TouchableOpacity onPress={() => this.props.openpostModal()} style={[styles.chat, { top: 0, position: 'absolute' }]}>
+                  <Image source={neighbors[id].post ? postSmall : null} style={[styles.chat, neighbors[id].post ? this.chatDiv(h_no) : null]} />
+                </TouchableOpacity>}
             </>
           })}
 
