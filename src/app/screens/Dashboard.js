@@ -1000,7 +1000,7 @@ class Dashboard extends React.Component {
           />
         </View>
         <View style={{ width: !value ? '70%' : 110, alignItems: 'center', borderColor: 'blue' }}>
-          <View style={{ paddingHorizontal: 4, paddingVertical: 3, backgroundColor: color }}>
+          <View style={[{ paddingHorizontal: 4, paddingVertical: 3, backgroundColor: color }, value ? { width: '100%' } : null]}>
             <Text style={{ fontSize: 10 }}>
               {text}
             </Text>
