@@ -1029,7 +1029,7 @@ class Dashboard extends React.Component {
                 source={postImg}
               />
             </View>
-            <View style={{ width: !value ? 130 : 170, backgroundColor: 'black', alignItems: 'flex-start' }}>
+            <View style={{ width: !value ? 130 : '54%', backgroundColor: 'black', alignItems: 'flex-start' }}>
               {
                 this.postMessage('Lorem epsum dolor sit', 'green', value)
               }
@@ -1458,7 +1458,7 @@ const styles = StyleSheet.create({
     height: '60%',
     flex: 1,
     borderColor: 'black',
-    borderWidth: 1,
+    // borderWidth: 1,
     margin: 2
   },
   postButtonsRow: {
