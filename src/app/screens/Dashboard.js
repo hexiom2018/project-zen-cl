@@ -2096,10 +2096,10 @@ class RenderHouse extends React.Component {
           <DoubleClick
             singleTap={() => {
               console.log("single tap");
-              this._onPress(h_no, neighborID)
             }}
             doubleTap={() => {
               console.log("double tap");
+              this._onPress(h_no, neighborID)
             }}
             delay={200}
           >
