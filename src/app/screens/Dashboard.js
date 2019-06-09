@@ -2089,13 +2089,14 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
 
-          onPress={() => this._onPress(h_no, neighborID)}
+          // onPress={() => this._onPress(h_no, neighborID)}
         // onPress={this.props.openpostModal}
         // onPress={this.props.openchatModal}
         >
           <DoubleClick
             singleTap={() => {
               console.log("single tap");
+              this._onPress(h_no, neighborID)
             }}
             doubleTap={() => {
               console.log("double tap");
