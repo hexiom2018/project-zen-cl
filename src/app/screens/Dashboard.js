@@ -1036,15 +1036,27 @@ class Dashboard extends React.Component {
         style={[{ height: '100%', width: '100%', justifyContent: 'center' }, !value ? { alignItems: 'center', position: 'absolute', top: 0, zIndex: 10000 } : null]}
       >
         <View style={{ height: '100%', justifyContent: 'center' }}>
+
           <TouchableOpacity
-            onPress={() => this.setState({ postModal: true })}
+            // onPress={() => this.setState({ postModal: true })}
             activeOpacity={0.5}
             style={{ flexDirection: 'row', borderWidth: 3, borderColor: 'grey' }}>
             <View style={{ width: 150, height: 150 }}>
-              <Image
-                style={{ width: '100%', height: '100%' }}
-                source={postImg}
-              />
+              <DoubleClick
+                singleTap={() => {
+                  console.log("single tap");
+                }}
+                doubleTap={() => {
+                  console.log("double tap");
+                  this.setState({ postModal: true })
+                }}
+                delay={200}
+              >
+                <Image
+                  style={{ width: '100%', height: '100%' }}
+                  source={postImg}
+                />
+              </DoubleClick>
             </View>
             <View style={{ width: !value ? 130 : '54%', backgroundColor: 'black', alignItems: 'flex-start' }}>
               {
@@ -1630,6 +1642,23 @@ class RenderHouse extends React.Component {
     })
   }
 
+  async componentWillMount() {
+
+    let uid = await AsyncStorage.getItem("auth");
+
+    this.getMessages(uid)
+
+  }
+
+  getMessages(user) {
+
+    if (user) {
+      firebase.database().ref('/IM History/' + user).on('child_added', (snapShot) => {
+        this.setState({ messages: snapShot.val() })
+      })
+    }
+  }
+
   _onChangeAction = (itemValue, itemIndex) => {
     this.setState({ action: itemValue })
   }
@@ -2047,7 +2076,6 @@ class RenderHouse extends React.Component {
 
   render() {
     const { house, h_no, neighbors, ...props } = this.props;
-
     let flag = false;
     let neighborID = '';
     return (
@@ -2061,7 +2089,7 @@ class RenderHouse extends React.Component {
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
 
-        onPress={() => this._onPress(h_no, neighborID)}
+          onPress={() => this._onPress(h_no, neighborID)}
         // onPress={this.props.openpostModal}
         // onPress={this.props.openchatModal}
         >
@@ -2087,6 +2115,11 @@ class RenderHouse extends React.Component {
                   neighbors[id].message &&
                   <TouchableOpacity onPress={this.props.openchatModal} style={[styles.chat, { overflow: 'hidden' }, neighbors[id].message ? this.chatDiv(h_no) : null]}>
                     <Image source={neighbors[id].message ? chatBox : null} style={[styles.chat]} />
+                    <View style={{ position: 'absolute', zIndex: 10000 }}>
+                      <Text style={{ fontSize: 12, color: 'blue', textAlign: 'center' }}>
+                        {this.state.messages ? `${this.state.messages[0].slice(0, 10)}...` : null}
+                      </Text>
+                    </View>
                   </TouchableOpacity>}
                 {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
                 {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#27B371' } : { backgroundColor: 'red' }]} />}
