@@ -122,6 +122,8 @@ import HouseBlueLeft from '../../../assets/dashboard/house_c_7.png'
 import { Dropdown } from 'react-native-material-dropdown'
 import { RotationGestureHandler } from "react-native-gesture-handler";
 
+import DoubleClick from 'react-native-double-tap'
+
 const cHouses = [
   cHouse1,
   cHouse2,
@@ -238,6 +240,27 @@ class Dashboard extends React.Component {
     var a = this.props.navigation;
     // console.log("snapshot")
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.LANDSCAPE_RIGHT);
+
+
+
+  }
+
+  getPostComments(user) {
+
+    if (user) {
+      firebase.database().ref('/Post Commentry/' + user).on('child_added', (snapShot) => {
+        this.setState({ comments: snapShot.val() })
+      })
+    }
+  }
+
+  getMessages(user) {
+
+    if (user) {
+      firebase.database().ref('/IM History/' + user).on('child_added', (snapShot) => {
+        this.setState({ messages: snapShot.val() })
+      })
+    }
   }
 
   getUsersState() {
@@ -268,22 +291,12 @@ class Dashboard extends React.Component {
 
     this._RefreshHouse();
 
+    this.getMessages(uid)
+
+    this.getPostComments(uid)
+
   }
 
-  // componentWillUnmount() {
-  //   AppState.removeEventListener('change', this._handleAppStateChange);
-  // }
-
-  // _handleAppStateChange = (nextAppState) => {
-  //   console.log(nextAppState, 'app sattate')
-  //   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-  //     console.log('App has come to the foreground!')
-  //   } else {
-  //     console.log('App has gone to the background!')
-
-  //   }
-  //   this.setState({ appState: nextAppState });
-  // }
 
   _RefreshHouse = () => {
     this.getNeighbors();
@@ -313,14 +326,27 @@ class Dashboard extends React.Component {
   };
 
   getNeighbors = () => {
+    var arr = []
     var users = firebase
       .database()
       .ref("/neighborhood/")
       .orderByChild('neighborID')
       .equalTo(this.state.neighborID)
       .on("value", snap => {
+
+        for (var key in snap.val()) {
+          var data = snap.val()[key]
+          if (data.profile) {
+            arr.push(data.profile)
+          }
+        }
+
         this.setState({
-          neighbors: snap.val()
+          neighbors: snap.val(),
+          profilePics: arr
+        }, () => {
+          // console.log(this.state.neighbors, 'get neighbors hetre')
+          console.log(this.state.profilePics, 'get profilePics hetre')
         });
       })
   };
@@ -438,20 +464,6 @@ class Dashboard extends React.Component {
       alert('Please login first')
     }
   };
-
-  // uploadImage = async () => {
-  //   var uri = this.state.image;
-  //   console.log(uri);
-  //   var imageName = "profile";
-  //   const response = await fetch(uri);
-  //   const blob = await response.blob();
-  //   var projectNameText = this.state.projectNameText;
-  //   var ref = firebase
-  //     .storage()
-  //     .ref()
-  //     .child(UID + "/" + imageName);
-  //   return ref.put(blob);
-  // };
 
 
   async  uploadImageAsync(uri) {
@@ -733,18 +745,20 @@ class Dashboard extends React.Component {
 
   }
 
-  renderChats(color, image) {
+  renderChats(text, index) {
+    const { profilePics } = this.state
+    var color = index === 0 ? '#6CB9FE' : index === 1 ? "#F9622C" : '#A2AD2A'
     return (
       <View style={{ width: '100%', flexDirection: 'row', borderColor: 'yellow' }}>
         <View style={{ width: '30%', borderColor: 'red', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 5, paddingVertical: 5, marginTop: 5 }}>
-          <View style={{ width: 30, height: 30 }}>
-            <Image source={image} style={{ width: '100%', height: '100%' }} />
+          <View style={{ width: 30, height: 30, borderRadius: 50, overflow: 'hidden' }}>
+            <Image source={profilePics && profilePics[index] ? { uri: profilePics[index] } : Profile} style={{ width: '100%', height: '100%' }} />
           </View>
         </View>
         <View style={{ width: '70%', paddingHorizontal: 7, paddingVertical: 5, alignItems: 'center' }}>
           <View style={{ width: '90%', borderColor: color, backgroundColor: color, paddingHorizontal: 5, paddingVertical: 10 }}>
             <Text style={{ color: 'black' }}>
-              {'Lorem epsum dolor'}
+              {text}
             </Text>
           </View>
         </View>
@@ -754,6 +768,7 @@ class Dashboard extends React.Component {
   // chat messages modal
 
   renderChatMessages = () => {
+    const { messages } = this.state
     return (
 
       <View style={[styles.mainDivPost]}>
@@ -761,13 +776,12 @@ class Dashboard extends React.Component {
         <View style={styles.innerMainDiv}>
           <View style={{ flex: 1 }}>
             {
-              this.renderChats('#6CB9FE', image1)
-            }
-            {
-              this.renderChats('#F9622C', image2)
-            }
-            {
-              this.renderChats('#A2AD2A', image3)
+              messages &&
+              messages.map((items, index) => {
+                return (
+                  this.renderChats(items, index)
+                )
+              })
             }
           </View>
           <View style={styles.postButtonsRow}>
@@ -990,17 +1004,19 @@ class Dashboard extends React.Component {
       );
     });
 
-  postMessage(text, color, value) {
+  postMessage(text, value, index) {
+    const { profilePics } = this.state
+    var color = index === 0 ? 'green' : index === 1 ? '#6CB9FE' : index === 2 ? '#F9622C' : '#A2AD2A'
     return (
       <View style={{ width: '100%', flexDirection: 'row', marginVertical: !value ? 2 : 4 }}>
         <View style={{ width: '30%', alignItems: 'center', borderColor: 'red' }}>
           <Image
-            style={{ width: 20, height: 20 }}
-            source={image1}
+            style={{ width: 20, height: 20, borderRadius: 50, overflow: 'hidden' }}
+            source={profilePics && profilePics[index] ? { uri: profilePics[index] } : Profile}
           />
         </View>
         <View style={{ width: !value ? '70%' : 110, alignItems: 'center', borderColor: 'blue' }}>
-          <View style={[{ paddingHorizontal: 4, paddingVertical: 3, backgroundColor: color }, value ? { width: '100%' } : null]}>
+          <View style={[{ paddingHorizontal: 4, paddingVertical: 3, backgroundColor: color, width: '100%' }]}>
             <Text style={{ fontSize: 10 }}>
               {text}
             </Text>
@@ -1011,6 +1027,7 @@ class Dashboard extends React.Component {
   }
 
   renderPosts(value) {
+    const { comments } = this.state
     return (
       <TouchableOpacity
         // key={b_no}
@@ -1031,16 +1048,12 @@ class Dashboard extends React.Component {
             </View>
             <View style={{ width: !value ? 130 : '54%', backgroundColor: 'black', alignItems: 'flex-start' }}>
               {
-                this.postMessage('Lorem epsum dolor sit', 'green', value)
-              }
-              {
-                this.postMessage('Lorem epsum dolor sit epsum dolor sit', '#6CB9FE', value)
-              }
-              {
-                this.postMessage('Lorem epsum dolor', '#F9622C', value)
-              }
-              {
-                this.postMessage('Lorem epsum sit e', '#A2AD2A', value)
+                comments &&
+                comments.map((items, index) => {
+                  return (
+                    this.postMessage(items, value, index)
+                  )
+                })
               }
             </View>
           </TouchableOpacity>
@@ -2040,46 +2053,55 @@ class RenderHouse extends React.Component {
     return (
       <View style={[styles.houseContainer, { position: 'relative' }]}>
         {this.renderActionModal()}
+
         <TouchableOpacity
-          activeOpacity={0.5}
+          activeOpacity={0.3}
           style={[
             styles.houseTouchable,
             styles[`house_${h_no}`] && styles[`house_${h_no}`]
           ]}
 
-          onPress={() => this._onPress(h_no, neighborID)}
+        onPress={() => this._onPress(h_no, neighborID)}
         // onPress={this.props.openpostModal}
         // onPress={this.props.openchatModal}
-
-
-
         >
+          <DoubleClick
+            singleTap={() => {
+              console.log("single tap");
+            }}
+            doubleTap={() => {
+              console.log("double tap");
+            }}
+            delay={200}
+          >
 
-          {neighbors && Object.keys(neighbors).map((id, p) => {
-            if (neighbors[id].houseID === h_no) {
+            {neighbors && Object.keys(neighbors).map((id, p) => {
+              if (neighbors[id].houseID === h_no) {
 
-              flag = true;
-              neighborID = id;
-            }
-            return <>
-              {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? this.setIm(h_no) === 'ImLeft' ? HouseBlueLeft : HouseBlueRight : neighbors[id].post ? this.setIm(h_no) === 'ImLeft' ? ImLeft : ImRight : cHouses[h_no - 1]} style={[styles.house]} />}
-              {neighbors[id].houseID === h_no &&
-                neighbors[id].profile &&
-                <TouchableOpacity onPress={this.props.openchatModal} style={[styles.chat, { top: 0, position: 'absolute' }]}>
-                  <Image source={neighbors[id].profile ? chatBox : null} style={[styles.chat, neighbors[id].profile ? this.chatDiv(h_no) : null]} />
-                </TouchableOpacity>}
-              {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
-              {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#27B371' } : { backgroundColor: 'red' }]} />}
-              {neighbors[id].houseID === h_no &&
-                neighbors[id].post &&
-                <TouchableOpacity onPress={() => this.props.openpostModal()} style={[styles.chat, { top: 0, position: 'absolute' }]}>
-                  <Image source={neighbors[id].post ? postSmall : null} style={[styles.chat, neighbors[id].post ? this.chatDiv(h_no) : null]} />
-                </TouchableOpacity>}
-            </>
-          })}
+                flag = true;
+                neighborID = id;
+              }
+              return <>
+                {neighbors[id].houseID === h_no && <Image source={neighbors[id].message ? this.setIm(h_no) === 'ImLeft' ? HouseBlueLeft : HouseBlueRight : neighbors[id].post ? this.setIm(h_no) === 'ImLeft' ? ImLeft : ImRight : cHouses[h_no - 1]} style={[styles.house]} />}
+                {neighbors[id].houseID === h_no &&
+                  neighbors[id].message &&
+                  <TouchableOpacity onPress={this.props.openchatModal} style={[styles.chat, { overflow: 'hidden' }, neighbors[id].message ? this.chatDiv(h_no) : null]}>
+                    <Image source={neighbors[id].message ? chatBox : null} style={[styles.chat]} />
+                  </TouchableOpacity>}
+                {neighbors[id].houseID === h_no && <Image source={neighbors[id].profile ? { uri: neighbors[id].profile } : Profile} style={[styles.profile, neighbors[id].profile ? { width: 30, height: 30 } : null]} />}
+                {neighbors[id].houseID === h_no && <View style={[styles.status, neighbors[id].online ? { backgroundColor: '#27B371' } : { backgroundColor: 'red' }]} />}
+                {neighbors[id].houseID === h_no &&
+                  neighbors[id].post &&
+                  <TouchableOpacity onPress={() => this.props.openpostModal()} style={[styles.chat, neighbors[id].post ? this.chatDiv(h_no) : null, { overflow: 'hidden' }]}>
+                    <Image source={neighbors[id].post ? postSmall : null} style={[styles.chat]} />
+                  </TouchableOpacity>
+                }
+              </>
+            })}
 
-          {!flag && <Image source={house} style={styles.house} />}
+            {!flag && <Image source={house} style={styles.house} />}
 
+          </DoubleClick>
         </TouchableOpacity>
       </View>
     )

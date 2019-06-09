@@ -31,7 +31,7 @@ export default class SignIn extends Component {
     loading: true,
     userEmail: "",
     userPassword: "",
-    UID: '', 
+    UID: '',
     USERNAME: ''
   };
   async componentWillMount() {
@@ -54,8 +54,8 @@ export default class SignIn extends Component {
     let uid = await AsyncStorage.getItem("auth");
     let user = await AsyncStorage.getItem("username")
 
-    console.log(uid,'useruid')
-    console.log(user,'useruseruser')
+    console.log(uid, 'useruid')
+    console.log(user, 'useruseruser')
     navigate("Splash", {
       userName: user,
       UID: uid
@@ -86,10 +86,16 @@ export default class SignIn extends Component {
             var user = fb.currentUser;
             emailVerified = user.emailVerified;
 
-            if (emailVerified === false) { 
+            if (emailVerified === false) {
               var checkForUser = snapshot.val();
               var checking = checkForUser.userName;
               var UID = signedinUser.user.uid;
+              firebase.database().ref('/IM History/' + UID).set({
+                messages: ['hello world', 'lorem epsum dolor', 'this is dummy text']
+              })
+              firebase.database().ref('/Post Commentry/' + UID).set({
+                comments: ['This is a comment', 'post comments here', 'hello world', 'lorem epsum dolor']
+              })
               AsyncStorage.setItem('auth', UID).then(() => {
                 AsyncStorage.setItem('username', checking).then(() => {
                   navigate("Splash", {
@@ -201,7 +207,7 @@ const styles = StyleSheet.create({
   },
   content: {
   },
-  form:{
+  form: {
     paddingTop: "10%"
   },
   btn: {
